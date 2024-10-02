@@ -17,22 +17,17 @@ const winConditions = [
 
 let options = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
-let humanPlayer = "X";
-let aiPlayer = "O";
+let humanPlayer = Math.random() < 0.5 ? "X" : "O"; // Randomly assign X or O
+let aiPlayer = humanPlayer === "X" ? "O" : "X";   // Set AI to the opposite of the human player
 let running = false;
 let playerScore = 0;  // Track player score
 let aiScore = 0;      // Track AI score
 let playerLosses = 0; // Track player losses
-const lossLimit = 5;  // Limit to prompt "X" or "O"
 
 initializeGame();
 
 function initializeGame() {
-    if (playerLosses >= lossLimit) {
-        choosePlayer();  // Ask after 5 losses from the player
-    } else {
-        resetGameVariables(); 
-    }
+    resetGameVariables();  // Reset for a normal game start
     cells.forEach((cell, index) => {
         cell.setAttribute("cellIndex", index);
         cell.addEventListener("click", cellClicked);
@@ -42,23 +37,11 @@ function initializeGame() {
     running = true;
 }
 
-function choosePlayer() {
-    let choice = prompt("Do you want to be 'X' or 'O'?").toUpperCase();
-    if (choice !== "X" && choice !== "O") {
-        choice = "X"; // Default to X if input is invalid
-    }
-    humanPlayer = choice;
-    aiPlayer = humanPlayer === "X" ? "O" : "X";
-    resetGameVariables();
-}
-
 function resetGameVariables() {
     options = ["", "", "", "", "", "", "", "", ""];
     cells.forEach(cell => cell.textContent = "");
-    if (Math.random() < 0.5) {
-        currentPlayer = humanPlayer; // Player starts
-    } else {
-        currentPlayer = aiPlayer; // AI starts
+    currentPlayer = Math.random() < 0.5 ? humanPlayer : aiPlayer; // Randomly choose who starts
+    if (currentPlayer === aiPlayer) {
         statusText.textContent = "AI's turn";
         setTimeout(aiMove, 300);
     }
@@ -171,10 +154,6 @@ function findBestMove() {
 }
 
 function restartGame() {
-    if (playerLosses >= lossLimit) {
-        choosePlayer();  // Ask again if player lost 5 times
-    } else {
-        resetGameVariables();  // No prompt, just reset
-    }
+    resetGameVariables();  // No prompt, just reset
     running = true;
 }
