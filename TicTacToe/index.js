@@ -22,7 +22,6 @@ let aiPlayer = humanPlayer === "X" ? "O" : "X";   // Set AI to the opposite of t
 let running = false;
 let playerScore = 0;  // Track player score
 let aiScore = 0;      // Track AI score
-let playerLosses = 0; // Track player losses
 
 initializeGame();
 
@@ -58,7 +57,7 @@ function cellClicked() {
     checkWinner();
 
     if (running) {
-        setTimeout(aiMove, 300); // AI takes a turn if game is still running
+        setTimeout(aiMove, 300); // 3 seconds for Ai to runn
     }
 }
 
@@ -101,7 +100,7 @@ function checkWinner() {
         } else {
             aiScore++;
             aiScoreText.textContent = aiScore; // Update AI score on screen
-            playerLosses++;  // Increment loss counter if AI wins
+            playerLosses++;  // Increment loss counter if AI wins gg
         }
 
     } else if (!options.includes("")) {
@@ -154,6 +153,6 @@ function findBestMove() {
 }
 
 function restartGame() {
-    resetGameVariables();  // No prompt, just reset
+    resetGameVariables();  // reset
     running = true;
 }
