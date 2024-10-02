@@ -29,9 +29,9 @@ initializeGame();
 
 function initializeGame() {
     if (playerLosses >= lossLimit) {
-        choosePlayer();  // Ask after 5 losses
+        choosePlayer();  // Ask after 5 losses from the player
     } else {
-        resetGameVariables();  // Just reset for normal game start
+        resetGameVariables(); 
     }
     cells.forEach((cell, index) => {
         cell.setAttribute("cellIndex", index);
