@@ -22,6 +22,7 @@ let aiPlayer = humanPlayer === "X" ? "O" : "X";   // Set AI to the opposite of t
 let running = false;
 let playerScore = 0;  // Track player score
 let aiScore = 0;      // Track AI score
+let playerLosses = 0; // Track player losses
 
 initializeGame();
 
@@ -39,12 +40,12 @@ function initializeGame() {
 function resetGameVariables() {
     options = ["", "", "", "", "", "", "", "", ""];
     cells.forEach(cell => cell.textContent = "");
-    currentPlayer = Math.random() < 0.5 ? humanPlayer : aiPlayer; // Randomly choose who starts
+    currentPlayer = Math.random() < 0.5 ? humanPlayer : aiPlayer; //sets a random number 
+    statusText.textContent = `${currentPlayer === humanPlayer ? "Player" : "AI"}'s turn`;
     if (currentPlayer === aiPlayer) {
-        statusText.textContent = "AI's turn";
-        setTimeout(aiMove, 300);
+        setTimeout(aiMove, 300); // AI makes the first move if it's their turn
+     }
     }
-}
 
 function cellClicked() {
     const cellIndex = this.getAttribute("cellIndex");
@@ -57,7 +58,7 @@ function cellClicked() {
     checkWinner();
 
     if (running) {
-        setTimeout(aiMove, 300); // 3 seconds for Ai to runn
+        setTimeout(aiMove, 300); // AI takes a turn if game is still running
     }
 }
 
@@ -100,7 +101,7 @@ function checkWinner() {
         } else {
             aiScore++;
             aiScoreText.textContent = aiScore; // Update AI score on screen
-            playerLosses++;  // Increment loss counter if AI wins gg
+            playerLosses++;  // Increment loss counter if AI wins
         }
 
     } else if (!options.includes("")) {
@@ -127,7 +128,7 @@ function aiMove() {
         }
     }
 }
-
+// ai calculations for their next move
 function findBestMove() {
     for (let i = 0; i < winConditions.length; i++) {
         const [a, b, c] = winConditions[i];
@@ -153,6 +154,21 @@ function findBestMove() {
 }
 
 function restartGame() {
-    resetGameVariables();  // reset
-    running = true;
+    if(statusText.textContent.includes("Draw!")){
+        humanPlayer = Math.random() < 0.5 ? "X":"O";
+        aiPlayer = humanPlayer === "X" ? "O" : "X";
+    }
+    if (statusText.textContent.includes("AI wins!")) { // Check last game outcome and assign symbols for the next round
+        humanPlayer = "O";
+        aiPlayer = "X";
+    } else if (statusText.textContent.includes("Player wins!")) {
+        humanPlayer = "X";
+        aiPlayer = "O";
+    }
+    
+    // Reset game variables for a fresh start
+    resetGameVariables();
+    running = true;  // Allow the game to start again if went lost
+    statusText.textContent = `${currentPlayer === humanPlayer ? "Player" : "AI"}'s turn`;
 }
+
