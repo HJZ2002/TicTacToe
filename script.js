@@ -50,7 +50,7 @@ let bestTimeMs = loadBestTime();
 let leaderboardFast = loadFastLeaderboard();
 
 /* ============================
-   COLOR-BLIND MODE (add-on)
+   COLOR-BLIND MODE 
    ============================ */
 const CB_PALETTES = [
   { name: "Default",      x: "#ff6b6b", o: "#4cd3ff" }, // your current look
@@ -60,7 +60,7 @@ const CB_PALETTES = [
   { name: "Monochrome",   x: "#cccccc", o: "#666666" }  // light vs dark gray
 ];
 
-// Safely apply a palette by 
+// This applys when if the user clicks the color blind mode
 function applyColorBlindPalette(index){
   const listLen = CB_PALETTES.length;
   const idx = ((index % listLen) + listLen) % listLen;
@@ -415,3 +415,4 @@ function restartGame() {
   running = true;
   startNewRoundWithChoice();
 }
+
