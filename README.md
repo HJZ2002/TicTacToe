@@ -10,7 +10,7 @@
 
 🖥️ UI / UX Enhancements 
 
-🎨 Automatically injects a “Color-Blind Mode” button beside Restart (no HTML / CSS edits needed).
+🎨 Automatically injects a “Color-Blind Mode” button beside Restart
 
 🌀 Respects reduced-motion preferences (disables animations if system requests less motion).
 
