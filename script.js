@@ -10,11 +10,11 @@ const playerNameText = document.querySelector("#playerName");
 const changeNameBtn = document.querySelector("#changeNameBtn");
 const leaderboardList = document.querySelector("#leaderboardList");
 
-// Optional color buttons
+// color buttons
 const changeColorBtnTop = document.querySelector("#changeColorBtn");
 const changeColorBtnBottom = document.querySelector("#colorBtnBottom");
 
-// Optional difficulty select (safe if missing)
+// difficulty select 
 const difficultySelect = document.getElementById("difficultySelect");
 
 // === LocalStorage keys ===
@@ -61,7 +61,7 @@ let difficulty = loadDifficulty();
 wireDifficultySelect();
 
 /* ============================
-   COLOR-BLIND MODE (add-on)
+   COLOR-BLIND MODE
    ============================ */
 const CB_PALETTES = [
   { name: "Default",      x: "#ff6b6b", o: "#4cd3ff" },
@@ -277,7 +277,7 @@ function startNewRoundWithChoice(){
   roundStartAt = performance.now();
   running = true;
 
-  // If AI starts, make its move (defensive: force turn to AI)
+  // If AI starts, make its move 
   if (currentPlayer === aiPlayer) {
     setTimeout(() => {
       currentPlayer = aiPlayer; // <= important: ensure AI is the actor
@@ -302,7 +302,7 @@ function cellClicked() {
   // After human move, resolve win/draw or pass turn to AI
   checkWinner();
 
-  // If still running AND now it's AI's turn, let AI move
+  // If still running AND now it's AI's turn,
   if (running && currentPlayer === aiPlayer) {
     setTimeout(() => {
       currentPlayer = aiPlayer; // <= ensure AI is active
@@ -389,7 +389,7 @@ function checkWinner() {
 function aiMove() {
   if (!running) return;
 
-  // Make absolutely sure the AI is the actor now
+  // Making sure ai is the focus
   if (currentPlayer !== aiPlayer) currentPlayer = aiPlayer;
 
   let bestMove;
@@ -400,10 +400,10 @@ function aiMove() {
     options.forEach((v, i) => { if (v === "") empty.push(i); });
     bestMove = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
   } else if (difficulty === "normal") {
-    // Normal: try to win, else block, else random
+    // Normal: a pretty balance AI
     bestMove = findBestMove();
   } else {
-    // Hard: win/block, then center, then corners, else any
+    // Hard: smarter and hard to lose
     bestMove = findBestMoveAdvanced();
   }
 
