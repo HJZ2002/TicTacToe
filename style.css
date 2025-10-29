@@ -44,7 +44,7 @@ body {
   gap: 10px;
   width: auto;
   margin: 16px auto 10px;
-  transform: translateX(28px);
+  transform: translateX(30px);
 }
 
 /* Unique cell design */
@@ -314,7 +314,7 @@ button.small:hover{ transform: translateY(-1px); filter: brightness(1.05); }
 .leaderboard{
   width: 280px;
   margin: 14px auto 0;
-  text-align: left;
+  text-align: center;
 }
 .leaderboard li{
   margin: 2px 0;
@@ -364,4 +364,26 @@ button.small:hover{ transform: translateY(-1px); filter: brightness(1.05); }
 .symbolBtn:hover {
   background-color: #4CAF50;
   color: white;
+}
+#restartBtn {
+  font-size: 14px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, var(--accent-2), #506adf);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(82,110,255,.35);
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  margin-top: 10px;
+}
+
+#restartBtn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+#restartBtn:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
 }
