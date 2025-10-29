@@ -344,7 +344,7 @@ function cellClicked() {
   // After human move, resolve win/draw or pass turn to AI
   checkWinner();
 
-  // If still running AND now it's AI's turn,
+  // If still running its Ai's turn
   if (running && currentPlayer === aiPlayer) {
     setTimeout(() => {
       currentPlayer = aiPlayer;
@@ -416,16 +416,16 @@ function checkWinner() {
       // Keep the board visible and selection intact so the win is shown.
       aiScore++;
       aiScoreText.textContent = aiScore;
-      // (Do NOT clearBoardVisuals / reset symbolChosen here.)
+      
     }
 
-    return; // stop after a win so we don't fall through
+    return; // stop after a win
   }
 
   if (!options.includes("")) {
     setStatus("Draw!");
     running = false;
-    return; // stop after a draw
+    return; // stops after its draw
   }
 
   // Otherwise, continue play
@@ -489,7 +489,7 @@ function findBestMove() {
   return empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
 }
 
-// Hard mode: smarter priorities
+// Hard mode same properties
 function findBestMoveAdvanced() {
   // Use minimax to find the best possible move
   const best = minimax(options.slice(), aiPlayer, 0, -Infinity, Infinity);
@@ -517,7 +517,7 @@ function minimax(board, player, depth, alpha, beta) {
     const nextPlayer = (player === "X") ? "O" : "X";
     const result = minimax(board, nextPlayer, depth + 1, alpha, beta);
 
-    board[idx] = ""; // undo move
+    board[idx] = ""; 
 
     if (maximizing) {
       if (result.score > best.score) best = { score: result.score, index: idx };
@@ -546,7 +546,7 @@ function terminalState(board) {
 
 // === Restart: prompt for X/O again ===
 function restartGame() {
-  // Force the player to pick again on restart
+  // Restart again
   symbolChosen = false;
   options = ["", "", "", "", "", "", "", "", ""];
   clearBoardVisuals();
