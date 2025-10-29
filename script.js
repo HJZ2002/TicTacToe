@@ -293,7 +293,7 @@ function initializeGame() {
 
   // Wire Play-as buttons for X/O settup
   wirePlayAsButtons();
-  setStatus("What u wanna play with X or O ?");
+  setStatus("What u wanna play X or O ? ");
   running = false; // lock until selection
 }
 
@@ -548,4 +548,3 @@ function restartGame() {
   }
   startNewRoundWithChoice();
 }
-
