@@ -1,4 +1,4 @@
-// ===== Query DOM =====
+// ===== Query DOM ===== and setup area
 const cells = document.querySelectorAll(".cell");
 const statusText = document.querySelector("#statusText");
 const restartBtn = document.querySelector("#restartBtn");
@@ -25,7 +25,8 @@ const LS_KEYS = {
   boardFast: "ttt_fastest_leaderboard",
   themeHue: "ttt_theme_hue",
   colorBlindIndex: "ttt_colorblind_index",
-  difficulty: "ttt_difficulty"
+  difficulty: "ttt_difficulty",
+  playerSymbol: "ttt_player_symbol" // remember X/O
 };
 
 // === Win conditions ===
@@ -43,6 +44,7 @@ let aiPlayer = "O";
 let running = false;
 let playerScore = 0;
 let aiScore = 0;
+let symbolChosen = false; // player must click X/O before play
 
 // === Timer state ===
 let roundStartAt = 0;
@@ -135,6 +137,47 @@ function wireDifficultySelect(){
   });
 }
 
+// === NEW: symbol choice (no prompts; preserves your token colors) ===
+function loadPlayerSymbol(){
+  const s = localStorage.getItem(LS_KEYS.playerSymbol);
+  return (s === "O") ? "O" : "X"; // default X
+}
+function savePlayerSymbol(s){
+  localStorage.setItem(LS_KEYS.playerSymbol, s);
+}
+
+// Use a button-only class that won't collide with your board 
+function markSymbolButtons(sym){
+  const btnX = document.getElementById("playAsX");
+  const btnO = document.getElementById("playAsO");
+  if (!btnX || !btnO) return;
+  btnX.classList.toggle("is-selected", sym === "X");
+  btnO.classList.toggle("is-selected", sym === "O");
+}
+
+function wirePlayAsButtons(){
+  const btnX = document.getElementById("playAsX");
+  const btnO = document.getElementById("playAsO");
+  if (!btnX || !btnO) return;
+
+  // show last choice visually (doesn't start yet)
+  markSymbolButtons(loadPlayerSymbol());
+
+  const applyChoice = (sym)=>{
+    humanPlayer = sym;
+    aiPlayer = (sym === "X") ? "O" : "X";
+    savePlayerSymbol(sym);
+    markSymbolButtons(sym);
+    symbolChosen = true;
+
+    // Always give player the first move after choosing
+    startNewRoundWithChoice();
+  };
+
+  btnX.addEventListener("click", ()=> applyChoice("X"));
+  btnO.addEventListener("click", ()=> applyChoice("O"));
+}
+
 function renderFastLeaderboard(){
   leaderboardList.innerHTML = "";
   leaderboardFast
@@ -162,16 +205,6 @@ function clearBoardVisuals(){
     cell.style.boxShadow = "";
     cell.style.filter = "";
   });
-}
-
-function chooseHumanSymbol(){
-  while (true) {
-    let s = prompt("Choose your symbol (X or O):", "X");
-    if (!s) s = "X";
-    s = s.trim().toUpperCase();
-    if (s === "X" || s === "O") return s;
-    alert("Please enter X or O.");
-  }
 }
 
 function highlightWinLine(indices){
@@ -258,8 +291,10 @@ function initializeGame() {
     cbBtn.addEventListener("click", nextColorBlindPalette);
   }
 
-  startNewRoundWithChoice();
-  running = true;
+  // Wire Play-as buttons for X/O settup
+  wirePlayAsButtons();
+  setStatus("What u wanna play with X or O ?");
+  running = false; // lock until selection
 }
 
 // === Round control ===
@@ -267,34 +302,41 @@ function startNewRoundWithChoice(){
   options = ["", "", "", "", "", "", "", "", ""];
   clearBoardVisuals();
 
-  humanPlayer = chooseHumanSymbol();
+  // Require player to choose a symbol first
+  if (!symbolChosen) {
+    setStatus("Choose X or O to begin");
+    running = false;
+    return;
+  }
+
+  // Use saved/selected symbol
+  humanPlayer = loadPlayerSymbol();
   aiPlayer = (humanPlayer === "X") ? "O" : "X";
 
-  // X always starts; ensure currentPlayer aligns with starter
-  currentPlayer = (humanPlayer === "X") ? humanPlayer : aiPlayer;
-  setStatus(`${currentPlayer === humanPlayer ? "Player" : "AI"}'s turn`);
+  // Player always starts
+  currentPlayer = humanPlayer;
+  setStatus("Player's turn");
 
   roundStartAt = performance.now();
   running = true;
-
-  // If AI starts, make its move 
-  if (currentPlayer === aiPlayer) {
-    setTimeout(() => {
-      currentPlayer = aiPlayer; // <= important: ensure AI is the actor
-      aiMove();
-    }, 250);
-  }
 }
 
 function startNewRound(){
+  // Keep current symbol; re-open a fresh board
+  if (!symbolChosen) {
+    setStatus("Choose X or O to begin");
+    running = false;
+    return;
+  }
   startNewRoundWithChoice();
 }
 
 // === Interaction ===
 function cellClicked() {
   const cellIndex = this.getAttribute("cellIndex");
+  if (!running || !symbolChosen) return;
   if (this.classList.contains("filled")) return;
-  if (options[cellIndex] !== "" || !running || currentPlayer !== humanPlayer) return;
+  if (options[cellIndex] !== "" || currentPlayer !== humanPlayer) return;
 
   updateCell(this, cellIndex);
   this.classList.add("filled");
@@ -305,7 +347,7 @@ function cellClicked() {
   // If still running AND now it's AI's turn,
   if (running && currentPlayer === aiPlayer) {
     setTimeout(() => {
-      currentPlayer = aiPlayer; // <= ensure AI is active
+      currentPlayer = aiPlayer;
       aiMove();
     }, 250);
   }
@@ -314,7 +356,7 @@ function cellClicked() {
 function updateCell(cell, index) {
   options[index] = currentPlayer;
   cell.textContent = currentPlayer;
-  cell.classList.add(currentPlayer.toLowerCase(), "placing");
+  cell.classList.add(currentPlayer.toLowerCase(), "placing"); // uses existing .x/.o colors
   if (!PREFERS_REDUCED) {
     cell.addEventListener('animationend', () => cell.classList.remove('placing'), { once: true });
   } else {
@@ -385,11 +427,10 @@ function checkWinner() {
   }
 }
 
-// === AI (with difficulty) ===
+// === AI (with difficulty levels) ===
 function aiMove() {
   if (!running) return;
 
-  // Making sure ai is the focus
   if (currentPlayer !== aiPlayer) currentPlayer = aiPlayer;
 
   let bestMove;
@@ -400,10 +441,10 @@ function aiMove() {
     options.forEach((v, i) => { if (v === "") empty.push(i); });
     bestMove = empty.length ? empty[Math.floor(Math.random() * empty.length)] : null;
   } else if (difficulty === "normal") {
-    // Normal: a pretty balance AI
+    // Normal: balanced AI
     bestMove = findBestMove();
   } else {
-    // Hard: smarter and hard to lose
+    // Hard: minimax
     bestMove = findBestMoveAdvanced();
   }
 
@@ -444,7 +485,6 @@ function findBestMove() {
 }
 
 // Hard mode: smarter priorities
-// === HARD MODE: ===
 function findBestMoveAdvanced() {
   // Use minimax to find the best possible move
   const best = minimax(options.slice(), aiPlayer, 0, -Infinity, Infinity);
@@ -462,7 +502,7 @@ function minimax(board, player, depth, alpha, beta) {
   const maximizing = (player === aiPlayer);
   let best = { score: maximizing ? -Infinity : Infinity, index: -1 };
 
-  // Evaluate center → corners → edges (helps performance)
+  // Evaluate center to help performance
   const order = [4, 0, 2, 6, 8, 1, 3, 5, 7];
   const moves = order.filter(i => board[i] === "");
 
@@ -482,7 +522,7 @@ function minimax(board, player, depth, alpha, beta) {
       beta = Math.min(beta, result.score);
     }
 
-    if (beta <= alpha) break; // alpha-beta prune
+    if (beta <= alpha) break; 
   }
 
   return best;
@@ -494,14 +534,17 @@ function terminalState(board) {
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
       return { done: true, winner: board[a] };
     }
-  }
+    }
   if (!board.includes("")) return { done: true, winner: null }; // draw
   return { done: false, winner: null };
 }
 
-
-// === Restart: ask X/O again every time ===
+// === Restart: keep current X/O it won't start anything if u have not decide yet ===
 function restartGame() {
-  running = true;
+  if (!symbolChosen) {
+    setStatus("Choose X or O to begin");
+    running = false;
+    return;
+  }
   startNewRoundWithChoice();
 }
