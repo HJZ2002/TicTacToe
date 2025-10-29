@@ -48,3 +48,4 @@
 🌟 Clearer visual feedback when a player or AI wins.
 ⌨️ Fully keyboard-friendly and screen-reader accessible.
 🎨 Color accessibility and theme settings now persist between sessions.
+⌨️ Bug Fixes from the buttons
