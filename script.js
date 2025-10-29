@@ -412,19 +412,16 @@ function checkWinner() {
       saveFastLeaderboard(leaderboardFast);
       renderFastLeaderboard();
 
-    } else {
-      aiScore++;
-      aiScoreText.textContent = aiScore;
+} else {
+  aiScore++;
+  aiScoreText.textContent = aiScore;
 
-      // After AI wins, require choosing X/O again
-      symbolChosen = false;
-      setTimeout(() => {
-        clearBoardVisuals();
-        setStatus("What u wanna play X or O ?");
-        running = false;
-      }, 650);
+  // fixing the problem making sure to remove the delay 
+    symbolChosen = false;
+    clearBoardVisuals();
+    setStatus("What u wanna play X or O ?");
+    running = false;
     }
-    return;
   }
 
   if (!options.includes("")) {
