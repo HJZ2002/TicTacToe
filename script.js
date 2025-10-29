@@ -303,11 +303,11 @@ function startNewRoundWithChoice(){
   clearBoardVisuals();
 
   // Require player to choose a symbol first
-  if (!symbolChosen) {
-    setStatus("Choose X or O to begin");
-    running = false;
-    return;
-  }
+  //if (!symbolChosen) {
+    //setStatus("Choose X or O to begin");
+    //running = false;
+    //return;
+  //}
 
   // Use saved/selected symbol
   humanPlayer = loadPlayerSymbol();
@@ -315,7 +315,7 @@ function startNewRoundWithChoice(){
 
   // Player always starts
   currentPlayer = humanPlayer;
-  setStatus("Player's turn");
+  setStatus("Your turn");
 
   roundStartAt = performance.now();
   running = true;
@@ -457,7 +457,7 @@ function aiMove() {
     // If game continues, pass turn back to player
     if (running) {
       currentPlayer = humanPlayer;
-      setStatus("Player's turn");
+      setStatus("Your turn");
     }
   }
 }
