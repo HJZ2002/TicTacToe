@@ -376,7 +376,7 @@ function checkWinner() {
     const [a, b, c] = winConditions[i];
     const cellA = options[a], cellB = options[b], cellC = options[c];
     if (cellA === "" || cellB === "" || cellC === "") continue;
-    if (cellA === cellB && cellB === cellC) { winLine = [a,b,c]; break; }
+    if (cellA === cellB && cellB === cellC) { winLine = [a, b, c]; break; }
   }
 
   if (winLine) {
@@ -412,24 +412,24 @@ function checkWinner() {
       saveFastLeaderboard(leaderboardFast);
       renderFastLeaderboard();
 
-} else {
-  aiScore++;
-  aiScoreText.textContent = aiScore;
-
-  // fixing the problem making sure to remove the delay 
-    symbolChosen = false;
-    clearBoardVisuals();
-    setStatus("What u wanna play X or O ?");
-    running = false;
+    } else {
+      // Keep the board visible and selection intact so the win is shown.
+      aiScore++;
+      aiScoreText.textContent = aiScore;
+      // (Do NOT clearBoardVisuals / reset symbolChosen here.)
     }
+
+    return; // stop after a win so we don't fall through
   }
 
   if (!options.includes("")) {
     setStatus("Draw!");
     running = false;
-  } else {
-    changePlayer();
+    return; // stop after a draw
   }
+
+  // Otherwise, continue play
+  changePlayer();
 }
 
 // === AI (with difficulty levels) ===
