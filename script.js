@@ -291,9 +291,9 @@ function initializeGame() {
     cbBtn.addEventListener("click", nextColorBlindPalette);
   }
 
-  // Wire Play-as buttons for X/O settup
+  // Wire Play-as buttons for X/O setup
   wirePlayAsButtons();
-  setStatus("What u wanna play X or O ? ");
+  setStatus("What u wanna play X or O ?");
   running = false; // lock until selection
 }
 
@@ -303,11 +303,11 @@ function startNewRoundWithChoice(){
   clearBoardVisuals();
 
   // Require player to choose a symbol first
-  //if (!symbolChosen) {
-    //setStatus("Choose X or O to begin");
-    //running = false;
-    //return;
-  //}
+  if (!symbolChosen) {
+    setStatus("What u wanna play X or O ?");
+    running = false;
+    return;
+  }
 
   // Use saved/selected symbol
   humanPlayer = loadPlayerSymbol();
@@ -324,7 +324,7 @@ function startNewRoundWithChoice(){
 function startNewRound(){
   // Keep current symbol; re-open a fresh board
   if (!symbolChosen) {
-    setStatus("Choose X or O to begin");
+    setStatus("What u wanna play X or O ?");
     running = false;
     return;
   }
@@ -415,6 +415,14 @@ function checkWinner() {
     } else {
       aiScore++;
       aiScoreText.textContent = aiScore;
+
+      // After AI wins, require choosing X/O again
+      symbolChosen = false;
+      setTimeout(() => {
+        clearBoardVisuals();
+        setStatus("What u wanna play X or O ?");
+        running = false;
+      }, 650);
     }
     return;
   }
@@ -534,17 +542,17 @@ function terminalState(board) {
     if (board[a] && board[a] === board[b] && board[b] === board[c]) {
       return { done: true, winner: board[a] };
     }
-    }
+  }
   if (!board.includes("")) return { done: true, winner: null }; // draw
   return { done: false, winner: null };
 }
 
-// === Restart: keep current X/O it won't start anything if u have not decide yet ===
+// === Restart: prompt for X/O again ===
 function restartGame() {
-  if (!symbolChosen) {
-    setStatus("Choose X or O to begin");
-    running = false;
-    return;
-  }
-  startNewRoundWithChoice();
+  // Force the player to pick again on restart
+  symbolChosen = false;
+  options = ["", "", "", "", "", "", "", "", ""];
+  clearBoardVisuals();
+  setStatus("What u wanna play X or O ?");
+  running = false;
 }
