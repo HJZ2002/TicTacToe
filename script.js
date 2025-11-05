@@ -356,7 +356,7 @@ function cellClicked() {
 function updateCell(cell, index) {
   options[index] = currentPlayer;
   cell.textContent = currentPlayer;
-  cell.classList.add(currentPlayer.toLowerCase(), "placing"); // uses existing .x/.o colors
+  cell.classList.add(currentPlayer.toLowerCase(), "placing"); 
   if (!PREFERS_REDUCED) {
     cell.addEventListener('animationend', () => cell.classList.remove('placing'), { once: true });
   } else {
